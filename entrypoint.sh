@@ -41,7 +41,7 @@ apt install -y --no-install-recommends git make bc bison openssl \
 ln -sf "/usr/bin/python${python_version}" /usr/bin/python
 set_output hash "$(cd "$kernel_path" && git rev-parse HEAD || exit 127)"
 msg "Installing toolchain..."
-if [[ $arch = "arm64" ]]; then
+if [[ $arch = "x86_64" ]]; then
     arch_opts="ARCH=${arch} SUBARCH=${arch}"
     export ARCH="$arch"
     export SUBARCH="$arch"
@@ -51,19 +51,14 @@ if [[ $arch = "arm64" ]]; then
         make_opts=""
         host_make_opts=""
 
-        if ! apt install -y --no-install-recommends gcc-"$ver_number" g++-"$ver_number" \
-            gcc-"$ver_number"-aarch64-linux-gnu gcc-"$ver_number"-arm-linux-gnueabi; then
+        if ! apt install -y --no-install-recommends gcc-"$ver_number" g++-"$ver_number" ; then
             err "Compiler package not found, refer to the README for details"
             exit 1
         fi
 
         ln -sf /usr/bin/gcc-"$ver_number" /usr/bin/gcc
         ln -sf /usr/bin/g++-"$ver_number" /usr/bin/g++
-        ln -sf /usr/bin/aarch64-linux-gnu-gcc-"$ver_number" /usr/bin/aarch64-linux-gnu-gcc
-        ln -sf /usr/bin/arm-linux-gnueabi-gcc-"$ver_number" /usr/bin/arm-linux-gnueabi-gcc
 
-        export CROSS_COMPILE="aarch64-linux-gnu-"
-        export CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
     elif [[ $compiler = clang/* ]]; then
         ver="${compiler/clang\/}"
         ver_number="${ver/\/binutils}"
